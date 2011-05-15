@@ -111,12 +111,12 @@ describe SentiQL::Base do
 
   describe '.first' do
     it 'returns nil when no records found' do
-      r = SentiQL.first 'SHOW TABLES LIKE ?', ['non_existing_tbl%']
+      r = SentiQL::Base.first 'SHOW TABLES LIKE ?', ['non_existing_tbl%']
       r.should == nil
     end
 
     it 'returns a hash if record found with keys representing column values' do
-      r = SentiQL.first 'SELECT CONCAT(?,?) AS str', ['a','b']
+      r = SentiQL::Base.first 'SELECT CONCAT(?,?) AS str', ['a','b']
       r.should be_an_instance_of(Hash)
       r[:str].should == 'ab'
     end
@@ -124,7 +124,7 @@ describe SentiQL::Base do
 
   describe '.all' do
     it 'returns Mysql2::Result which holds data in Hashes' do
-      r = SentiQL.all 'SHOW OPEN TABLES'
+      r = SentiQL::Base.all 'SHOW OPEN TABLES'
       r.should be_an_instance_of(Mysql2::Result)
       r.first.should be_an_instance_of(Hash)
     end
