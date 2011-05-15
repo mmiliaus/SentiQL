@@ -14,6 +14,12 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "sentiql"
 
+  s.add_runtime_dependency 'mysql2', '< 0.3'
+
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'database_cleaner'
+  s.add_development_dependency 'activerecord', '~> 3.0.5'
+
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }

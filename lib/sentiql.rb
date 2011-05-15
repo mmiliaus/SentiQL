@@ -34,7 +34,7 @@ module Sentiql
 
         return self unless valid?
 
-        SentiQL.execute "UPDATE #{self.class.table} SET #{i.keys.map{|m| "#{m.to_s}=?"}.join(",")} WHERE id=?", values
+        Sentiql::Base.execute "UPDATE #{self.class.table} SET #{i.keys.map{|m| "#{m.to_s}=?"}.join(",")} WHERE id=?", values
 
       else
 
@@ -45,7 +45,7 @@ module Sentiql
 
         return self unless valid?
 
-        id = SentiQL.insert "INSERT INTO #{self.class.table} (#{i.keys.map{|k| k.to_s}.join(",")}) VALUES (#{i.map{|k| k="?"}.join(",")})", values
+        id = Sentiql::Base.insert "INSERT INTO #{self.class.table} (#{i.keys.map{|k| k.to_s}.join(",")}) VALUES (#{i.map{|k| k="?"}.join(",")})", values
         @attrs[:id] = id
         
         filter_with :after_create_filters
