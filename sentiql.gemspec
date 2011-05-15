@@ -4,7 +4,7 @@ require "sentiql/version"
 
 Gem::Specification.new do |s|
   s.name        = "sentiql"
-  s.version     = Sentiql::VERSION
+  s.version     = SentiQL::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Martynas Miliauskas"]
   s.email       = ["miliauskas@facebook.com"]

@@ -1,7 +1,7 @@
 require_relative 'spec_helper'
 require 'date'
 
-class User < Sentiql::Base
+class User < SentiQL::Base
 
   set_schema :name, :full_name, :email, :crypted_password, :salt, :created_at, :updated_at
   set_table :users
@@ -41,7 +41,7 @@ class User < Sentiql::Base
 end
 
 
-describe Sentiql::Base do
+describe SentiQL::Base do
 
   describe User do
 

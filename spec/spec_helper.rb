@@ -18,7 +18,7 @@ DB = Mysql2::Client.new(
       :database=>@config["database"]
     )
 DB.query_options.merge!(:symbolize_keys=>true)
-Sentiql::Base.connection = DB
+SentiQL::Base.connection = DB
 
 ActiveRecord::Base.establish_connection @config
 

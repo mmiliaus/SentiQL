@@ -1,6 +1,6 @@
 require "mysql2"
 
-module Sentiql
+module SentiQL
 
   class Base
     attr_accessor :attrs, :errors
@@ -34,7 +34,7 @@ module Sentiql
 
         return self unless valid?
 
-        Sentiql::Base.execute "UPDATE #{self.class.table} SET #{i.keys.map{|m| "#{m.to_s}=?"}.join(",")} WHERE id=?", values
+        SentiQL::Base.execute "UPDATE #{self.class.table} SET #{i.keys.map{|m| "#{m.to_s}=?"}.join(",")} WHERE id=?", values
 
       else
 
@@ -45,7 +45,7 @@ module Sentiql
 
         return self unless valid?
 
-        id = Sentiql::Base.insert "INSERT INTO #{self.class.table} (#{i.keys.map{|k| k.to_s}.join(",")}) VALUES (#{i.map{|k| k="?"}.join(",")})", values
+        id = SentiQL::Base.insert "INSERT INTO #{self.class.table} (#{i.keys.map{|k| k.to_s}.join(",")}) VALUES (#{i.map{|k| k="?"}.join(",")})", values
         @attrs[:id] = id
         
         filter_with :after_create_filters
