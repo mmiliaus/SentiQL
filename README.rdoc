@@ -10,7 +10,7 @@ I don't like using ActiveRecord or other fat ORMs because I think they are break
 Plus. I think it is wrong to put a thick abstraction layer on one of the biggest web application performance bottlenecks.
 
 == Notice
-This is REALY a work in progress, I wrote this lib during one evening after reading "Metaprogramming Ruby: Program Like a Ruby Pros". It is less then 140 LOCs, so even if it is missing one or other thing, just open the file and happy hacking.
+This is REALY a work in progress, I wrote this lib during one evening after reading "Metaprogramming Ruby: Program Like a Ruby Pros". It is less then 140 LOCs, so even if it is missing one or other thing, just open the sentiql.rb file and happy hacking.
 
 == Instalation
     gem install sentiql 
