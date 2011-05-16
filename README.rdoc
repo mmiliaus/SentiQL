@@ -1,0 +1,66 @@
+== SentiQL
+A minimalistic Ruby wrapper for MySQL. I love using SQL for data selection, except for basic selects (e.g. finding something by id), I love using OM interface to create, update and delete records in the database and I love when lib is not "overcoded". When you combine all this love, you get SentiQL.
+
+== Why SentiQL
+I don't like using ActiveRecord or other fat ORMs because I think they are breaking following rules:
+1. "Make everything as simple as possible, but not simpler" - Albert Einstein.
+2. Rule of Clarity. Clarity is better than cleverness. (Unix Philosophy)
+3. Rule of Simplicity: Design for simplicity; add complexity only where you must. (Unix Philosophy)
+
+Plus. I think it is wrong to put a thick abstraction layer on one of the biggest web application performance bottlenecks.
+
+== Notice
+This is REALY a work in progress, I wrote this lib during one evening after reading "Metaprogramming Ruby: Program Like a Ruby Pros". It is less then 140 LOCs, so even if it is missing one or other thing, just open the file and happy hacking.
+
+== Instalation
+    gem install sentiql 
+
+== How To
+1. Connect to database
+    DB = Mysql2::Client.new( 
+          :host=>'localhost', 
+          :username=>'username', 
+          :password=>'password', 
+          :database=>'db'
+        )
+    DB.query_options.merge!(:symbolize_keys=>true)
+    SentiQL::Base.connection = DB
+
+2. Working with User data
+
+    # creating
+    u = User.new :name=>'Tyler Durden', :password=>'project_mayhem'
+    u.save  
+
+    # updating
+    u[:name] = 'Tyler'
+    u.save
+
+    # reading
+    t = User.find_by :name=>'Tyler' # -> and instance of User
+    t = SentiQL::Base.first 'SELECT name FROM users where name=? LIMIT 1', ['Tyler'] # -> {:name=>'Tyler', :password=>'project_mayhem'}
+    users = SentiQL::Base.all 'SELECT name FROM users' # -> [{:name=>'Tyler'}]
+
+    # runing SQL query
+    SentiQL::Base.execute 'DELETE FROM users WHERE name=?', ['Robert Paulson']
+    
+
+3. User model
+
+    class User < SentiQL::Base
+      
+      set_schema :name, :password, :created_at            # column names of the table that you will play with
+      set_table :users                                    # table name
+
+      before_create :set_timestamp
+
+      protected 
+
+      def set_timestamp
+        self[:created_at] = Time.now
+      end
+
+    end
+
+== Licence
+I have no idea about this sort of things.
