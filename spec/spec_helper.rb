@@ -4,11 +4,11 @@ require 'rspec'
 require 'active_record'
 require 'mysql2'
 
-require 'sentiql'
+#require 'sentiql'
 
 ROOT_PATH = File.dirname(__FILE__)
 
-
+require File.join(ROOT_PATH, '..', 'lib', 'sentiql')
 @config = YAML.load_file(File.join(ROOT_PATH, '..', "config/database.yml"))['test']
 
 DB = Mysql2::Client.new( 

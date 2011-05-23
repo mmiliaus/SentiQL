@@ -7,6 +7,7 @@ module SentiQL
 
     def initialize attrs={}
       @attrs = {}
+      @errors = {}
       attrs.each_pair do |key, value|
         @attrs[key.to_sym] = value
       end
