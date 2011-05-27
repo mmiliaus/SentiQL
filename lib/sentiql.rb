@@ -9,7 +9,7 @@ module SentiQL
       @attrs = {}
       @errors = {}
       attrs.each_pair do |key, value|
-        @attrs[key.to_sym] = value
+        @attrs[key] = value
       end
     end
 
@@ -29,13 +29,15 @@ module SentiQL
       filter_with :before_save_filters
 
       if @attrs[:id]
+
+        self[:updated_at] = Time.now
+
         i = @attrs.select { |k| self.class.schema.include?(k) }     
         values = i.keys.map { |k| @attrs[k] }
         values << @attrs[:id]
 
         return self unless valid?
 
-        self[:updated_at] = Time.now
 
         SentiQL::Base.execute "UPDATE #{self.class.table} SET #{i.keys.map{|m| "#{m.to_s}=?"}.join(",")} WHERE id=?", values
 
@@ -43,13 +45,13 @@ module SentiQL
 
         filter_with :before_create_filters
 
+        self[:created_at] = Time.now
+        self[:updated_at] = Time.now
+
         i = @attrs.select { |k| self.class.schema.include?(k) }
         values = i.keys.map { |k| @attrs[k] }
 
         return self unless valid?
-
-        self[:created_at] = Time.now
-        self[:updated_at] = Time.now
 
         id = SentiQL::Base.insert "INSERT INTO #{self.class.table} (#{i.keys.map{|k| k.to_s}.join(",")}) VALUES (#{i.map{|k| k="?"}.join(",")})", values
         @attrs[:id] = id
