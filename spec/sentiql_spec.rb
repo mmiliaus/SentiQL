@@ -6,8 +6,10 @@ class User < SentiQL::Base
   set_schema :name, :full_name, :email, :crypted_password, :salt, :created_at, :updated_at
   set_table :users
 
-  before_save :set_updated_at
-  before_create :set_created_at
+  #before_save :set_updated_at
+  #before_create :set_created_at
+  before_save :touch_before_save
+  before_create :touch_before_create
   after_create :touch_after_create
   after_save :touch_after_save
 
@@ -22,12 +24,20 @@ class User < SentiQL::Base
 
   protected
 
-  def set_updated_at
-    self[:updated_at] = Time.now
+  #def set_updated_at
+    #self[:updated_at] = Time.now
+  #end
+
+  #def set_created_at
+    #self[:created_at] = Time.now
+  #end
+  
+  def touch_before_save
+    self[:before_save_touched] = Time.now
   end
 
-  def set_created_at
-    self[:created_at] = Time.now
+  def touch_before_create
+    self[:before_create_touched] = Time.now
   end
 
   def touch_after_create
@@ -73,6 +83,22 @@ describe SentiQL::Base do
         u[:full_name] = 'Natalie Portman'
         lambda { u.save }.should_not change(User, :count)
       end
+
+      it "sets created_at attr" do
+        u = User.new :name=>'Natalie'
+        u.save
+        u.created_at.should_not be_nil
+        sleep(1)
+        lambda { u.save }.should_not change(u, :created_at)
+      end
+
+      it "updates updated_at attr" do
+        u = User.new :name=>'Natalie'
+        u.save
+        u[:full_name] = 'Natalie Portman'
+        lambda { u.save }.should change(u, :updated_at)
+      end
+
     end
 
     describe 'filters' do
@@ -84,14 +110,14 @@ describe SentiQL::Base do
         u = User.new :name=>'Natalie'
         u.save
         sleep(1)
-        lambda { u.save }.should change(u, :updated_at)
+        lambda { u.save }.should change(u, :before_save_touched)
       end
 
       it "executes before_create filters only when record is created" do
         u = User.new :name=>'Natalie'
         u.save
         sleep(1)
-        lambda { u.save }.should_not change(u, :created_at)
+        lambda { u.save }.should_not change(u, :before_create_touched)
       end
       
       it "executes after_create filters only after record is created" do

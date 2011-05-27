@@ -35,6 +35,8 @@ module SentiQL
 
         return self unless valid?
 
+        self[:updated_at] = Time.now
+
         SentiQL::Base.execute "UPDATE #{self.class.table} SET #{i.keys.map{|m| "#{m.to_s}=?"}.join(",")} WHERE id=?", values
 
       else
@@ -45,6 +47,9 @@ module SentiQL
         values = i.keys.map { |k| @attrs[k] }
 
         return self unless valid?
+
+        self[:created_at] = Time.now
+        self[:updated_at] = Time.now
 
         id = SentiQL::Base.insert "INSERT INTO #{self.class.table} (#{i.keys.map{|k| k.to_s}.join(",")}) VALUES (#{i.map{|k| k="?"}.join(",")})", values
         @attrs[:id] = id
