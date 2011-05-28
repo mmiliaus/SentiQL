@@ -19,6 +19,7 @@ This is REALY a work in progress, I wrote this lib during one evening after read
 * OM to create, update and find by attribute
 * Prepared SQL statements, which automatically escapes input
 * Filters: before_save, before_create, after_save and after_create
+* Validations expressed in boolean logic
 * Automatic timestamps
 
 == Configuration
@@ -89,6 +90,29 @@ This is REALY a work in progress, I wrote this lib during one evening after read
       # ...
     end
 
+3. Validations
+    ...
+
+    def validate
+      name_not_blank? && name_not_longer_then?(20)
+    end
+
+    def name_not_blank?
+      if self[:name] == "" || self[:name].nil?
+        @errors << "Name can't 
+be blank"
+        return false
+      end
+      return true
+    end
+
+    def name_not_longer_then? max
+      if self[:name].length > max
+        @errors << "Name can't be longer then #{max} characters"
+        return false
+      end
+      return true
+    end
 
 == Licence
 I have no idea about this sort of things.
