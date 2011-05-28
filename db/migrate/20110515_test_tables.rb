@@ -11,14 +11,18 @@ class TestTables < ActiveRecord::Migration
       t.timestamps
     end
 
-    create_table :after_save do |t|
+    create_table :clubs do |t|
+      t.string :name
+      t.text :desc
+      t.text :reqs
+
       t.timestamps
     end
   end
 
   def self.down
     drop_table :users
-    drop_table :after_save
+    drop_table :clubs
   end
 
 end

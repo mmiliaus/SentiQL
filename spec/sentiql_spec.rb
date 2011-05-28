@@ -61,6 +61,24 @@ describe SentiQL::Base do
       end
     end
 
+    describe '.updated_all' do
+
+      it "updates model attrs" do
+        u = User.create :name=>'Natalie'
+        u.update_attributes({:full_name=>'Natalie Portman', :email=>'natalie@portman.com'})
+        u.save
+        uu = User.find_by :id=>u.id
+        uu.full_name.should == 'Natalie Portman'
+        uu.email.should == 'natalie@portman.com'
+      end
+      
+      it "ignores :id in new attributes hash" do
+        u = User.create :name=>'Natalie'
+        lambda { u.update_attributes({:id=>'1111', :full_name=>'Natalie Portman', :email=>'natalie@portman.com'}) }.should_not change(u, :id)
+      end
+
+    end
+
     describe '.save' do
       it "creates new record if instance is new" do
         u = User.new :name=>'Natalie'

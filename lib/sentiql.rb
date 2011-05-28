@@ -23,6 +23,12 @@ module SentiQL
       @attrs[key] = value
     end
 
+    def update_attributes hash
+      new_attrs = hash.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+      new_attrs.delete(:id)
+      @attrs = @attrs.merge(new_attrs)
+    end
+
 
     def save
 
