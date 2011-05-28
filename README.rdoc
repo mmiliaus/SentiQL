@@ -99,8 +99,7 @@ This is REALY a work in progress, I wrote this lib during one evening after read
 
     def name_not_blank?
       if self[:name] == "" || self[:name].nil?
-        @errors << "Name can't 
-be blank"
+        @errors << "Name can't be blank"
         return false
       end
       return true
