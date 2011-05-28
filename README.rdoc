@@ -15,8 +15,13 @@ This is REALY a work in progress, I wrote this lib during one evening after read
 == Instalation
     gem install sentiql 
 
-== How To
-1. Connect to database
+== Features
+* OM to create, update and find by attribute
+* Prepared SQL statements, which automatically escapes input
+* Filters: before_save, before_create, after_save and after_create
+* Automatic timestamps
+
+== Configuration
     DB = Mysql2::Client.new( 
           :host=>'localhost', 
           :username=>'username', 
@@ -26,41 +31,64 @@ This is REALY a work in progress, I wrote this lib during one evening after read
     DB.query_options.merge!(:symbolize_keys=>true)
     SentiQL::Base.connection = DB
 
-2. Working with User data
+== Usage examples
+1. Create
+    u = User.create :name=>'tdurden', :password=>'project_mayhem'
 
-    # creating
-    u = User.new :name=>'Tyler Durden', :password=>'project_mayhem'
-    u.save  
-
-    # updating
-    u[:name] = 'Tyler'
+2. Update
+    # single attribute update
+    u = User.find_by :name=>'tdurden'
+    u.full_name = 'Tyler Durden'
     u.save
 
-    # reading
-    t = User.find_by :name=>'Tyler' # -> and instance of User
-    t = SentiQL::Base.first 'SELECT name FROM users where name=? LIMIT 1', ['Tyler'] # -> {:name=>'Tyler', :password=>'project_mayhem'}
-    users = SentiQL::Base.all 'SELECT name FROM users' # -> [{:name=>'Tyler'}]
+    # multiple update
+    put '/users' do
+      @user = User.find_by :id=>params[:user][:id]
+      @user.updated_attributes params[:user]
+      @user.save
+    end
 
-    # runing SQL query
-    SentiQL::Base.execute 'DELETE FROM users WHERE name=?', ['Robert Paulson']
-    
+3. Select
+    # find by attribute
+    u = User.find_by :name=>'tdurden'
 
-3. User model
+    # select with SQL
 
+    # "?" is replaced with escaped adequate value from params array
+    sql = 'SELECT * FROM users WHERE name=?'
+    u = User.first sql, ['tdurden'] # -> [ {:name=>'tdurden', :password=>'project_mayhem'} ]
+
+    users = User.all 'SELECT * FROM users' # => Mysql2::Result
+    users.map {|u| u[:name] } #=> ['username1', 'username2']
+
+== Model
+1. Basic
     class User < SentiQL::Base
-      
-      set_schema :name, :password, :created_at            # column names of the table that you will play with
-      set_table :users                                    # table name
-
-      before_create :set_timestamp
-
-      protected 
-
-      def set_timestamp
-        self[:created_at] = Time.now
-      end
+    
+      set_table :users
+      set_schema :name, :full_name, :email, :crypted_password, :salt, :created_at, :updated_at
 
     end
+
+2. Using filters
+
+    before_save :create_salt, :encrypt_password, 
+    after_create :download_profile_image
+
+    protected
+
+    def create_salt
+      self[:salt] = 'salt'
+    end
+
+    def encrypt_password
+      self[:crypted_password] = "#{self[:salt]}#{self[:password]}"
+    end
+
+    def download_profile_image
+      # ...
+    end
+
 
 == Licence
 I have no idea about this sort of things.

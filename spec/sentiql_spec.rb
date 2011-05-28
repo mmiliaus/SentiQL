@@ -1,5 +1,42 @@
 require_relative 'spec_helper'
 require 'date'
+require 'active_support/all'
+
+class Club < SentiQL::Base
+
+  set_table :clubs
+  set_schema :name, :description, :reqs, :created_at, :updated_at
+
+  def validate
+    name_not_blank?
+    description_not_blank? && description_not_longer_then(400)
+  end
+
+  def name_not_blank?
+    if self[:name].blank?
+      errors << "Name can't be blank" 
+      return false
+    end
+    return true
+  end
+
+  def description_not_blank?
+    if self[:description].blank?
+      errors << "Description can't be blank"
+      return false
+    end
+    return true
+  end
+
+  def description_not_longer_then max
+    if self[:description].length > max
+      errors << "Description can't be longer then #{max.to_s}"
+      return false
+    end
+    return true
+  end
+
+end
 
 class User < SentiQL::Base
 
@@ -42,6 +79,42 @@ end
 
 
 describe SentiQL::Base do
+
+  describe 'validations' do
+
+    describe '.valid?' do
+
+      it 'returns false if there are errors' do
+        c = Club.new :name=>'Fight Club'
+        c.save
+        c.valid?.should be_false
+        c[:description] = 'some description'
+        c.valid?.should be_true
+      end
+
+    end
+
+    it "doesn't save to DB if record is not valid" do
+      c = Club.new :name=>'Fight Club'
+      c.save
+      c[:id].should be_nil
+    end
+
+    it "saves record if its valid" do
+      c = Club.new :name=>'Fight Club'
+      c.save
+      c[:description] = 'some description'
+      c.save
+      c.id.should_not be_nil
+    end
+
+    it "returns a list of errors if records does not pass validations"  do
+      c = Club.new :name=>'Fight Club'
+      c.valid?
+      c.errors.size.should_not == []
+    end
+
+  end
 
   describe User do
 

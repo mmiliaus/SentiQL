@@ -7,7 +7,7 @@ module SentiQL
 
     def initialize attrs={}
       @attrs = {}
-      @errors = {}
+      @errors = []
       attrs.each_pair do |key, value|
         @attrs[key.to_sym] = value
       end
@@ -31,7 +31,6 @@ module SentiQL
 
 
     def save
-
       filter_with :before_save_filters
 
       if @attrs[:id]
@@ -84,7 +83,12 @@ module SentiQL
       end
     end
 
-    def valid?; true; end
+    def validate; end
+    def valid?
+      @errors = []
+      validate
+      return @errors == [] ? true : false
+    end
       
     class << self
       def connection; @@connection; end

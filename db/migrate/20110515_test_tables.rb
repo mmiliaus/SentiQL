@@ -13,7 +13,7 @@ class TestTables < ActiveRecord::Migration
 
     create_table :clubs do |t|
       t.string :name
-      t.text :desc
+      t.text :description
       t.text :reqs
 
       t.timestamps
