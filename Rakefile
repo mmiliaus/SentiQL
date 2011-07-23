@@ -2,6 +2,7 @@ require 'bundler'
 require 'yaml'
 require 'logger'
 require 'active_record'
+require 'mysql2'
 
 Bundler::GemHelper.install_tasks
 

@@ -47,6 +47,20 @@ class User < SentiQL::Base
   before_create :touch_before_create
   after_create :touch_after_create
   after_save :touch_after_save
+  before_validation :touch_before_validation
+  after_validation :touch_after_validation
+
+  def validate
+    name_not_blank?
+  end
+
+  def name_not_blank?
+    if self[:name].blank?
+      errors << "Name can't be blank" 
+      return false
+    end
+    return true
+  end
 
   class << self
 
@@ -73,6 +87,14 @@ class User < SentiQL::Base
 
   def touch_after_save
     self[:after_save_touched] = Time.now
+  end
+
+  def touch_before_validation
+    self[:before_validation_touched] = Time.now
+  end
+
+  def touch_after_validation
+    self[:after_validation_touched] = Time.now
   end
 
 end
@@ -202,6 +224,20 @@ describe SentiQL::Base do
         u.save
         sleep(1)
         lambda { u.save }.should_not change(u, :before_create_touched)
+      end
+
+      it "executes before_validation filters even if record is not valid" do
+        u = User.new :before_validation_touched=>Time.now
+        lambda { u.save }.should change(u, :before_validation_touched)
+      end
+
+      it "executes after_validation filters after record only if record validates" do
+        u = User.new :after_validation_touched=>Time.now
+        sleep(1)
+        lambda { u.save }.should_not change(u, :after_validation_touched)
+        u[:name] = 'Natalie'
+        sleep(1)
+        lambda { u.save }.should change(u, :after_validation_touched)
       end
       
       it "executes after_create filters only after record is created" do

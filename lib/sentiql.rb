@@ -41,7 +41,9 @@ module SentiQL
         values = i.keys.map { |k| @attrs[k] }
         values << @attrs[:id]
 
+        filter_with :before_validation_filters
         return self unless valid?
+        filter_with :after_validation_filters
 
 
         SentiQL::Base.execute "UPDATE #{self.class.table} SET #{i.keys.map{|m| "#{m.to_s}=?"}.join(",")} WHERE id=?", values
@@ -56,7 +58,9 @@ module SentiQL
         i = @attrs.select { |k| self.class.schema.include?(k) }
         values = i.keys.map { |k| @attrs[k] }
 
+        filter_with :before_validation_filters
         return self unless valid?
+        filter_with :after_validation_filters
 
         id = SentiQL::Base.insert "INSERT INTO #{self.class.table} (#{i.keys.map{|k| k.to_s}.join(",")}) VALUES (#{i.map{|k| k="?"}.join(",")})", values
         @attrs[:id] = id
@@ -84,6 +88,7 @@ module SentiQL
     end
 
     def validate; end
+
     def valid?
       @errors = []
       validate
@@ -101,10 +106,17 @@ module SentiQL
       def before_save_filters; @before_save_filters ||={} ; end
       def before_create *args; @before_create_filters = args; end 
       def before_create_filters; @before_create_filters ||={}; end
+
+      def before_validation *args; @before_validation_filters = args; end 
+      def before_validation_filters; @before_validation_filters ||={}; end
+
       def after_create *args; @after_create_filters = args; end 
       def after_create_filters; @after_create_filters ||={}; end
       def after_save *args; @after_save_filters= args; end 
       def after_save_filters; @after_save_filters ||={}; end
+
+      def after_validation *args; @after_validation_filters = args; end 
+      def after_validation_filters; @after_validation_filters ||={}; end
 
       def set_table name; @table= name.to_s; end
       def table; @table.to_sym; end
